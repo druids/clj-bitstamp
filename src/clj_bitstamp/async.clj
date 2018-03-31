@@ -1,7 +1,8 @@
 (ns clj-bitstamp.async
   (:require
     [clojure.core.async :as async]
-    [cheshire.core :as cheshire])
+    [cheshire.core :as cheshire]
+    [tol.core :as tol])
   (:import
     com.pusher.client.channel.ChannelEventListener
     com.pusher.client.channel.SubscriptionEventListener
@@ -15,7 +16,7 @@
 
 (defn state->keyword
   [state]
-  (case state
+  (tol/case+ state
     ConnectionState/ALL :all
     ConnectionState/CONNECTING :connecting
     ConnectionState/CONNECTED :connected
@@ -51,7 +52,7 @@
   [callback]
   (reify SubscriptionEventListener
     (onEvent [this channel-name event-name data]
-      (callback channel-name event-name (cheshire/parse-string data true)))))
+      (callback channel-name (keyword event-name) (cheshire/parse-string data true)))))
 
 
 (defn disconnect
@@ -70,11 +71,9 @@
         data-ch (async/chan data-buffer-or-n)
         pusher-callback (fn [pusher action data]
                           (async/>!! status-ch [action data]))
-        channel-callback (fn [pusher channel-name]
-                           (async/>!! status-ch [:channel-subscribed channel-name]))
         subs-callback (fn [channel-name event-name data]
                         (async/>!! data-ch [channel-name event-name data]))
-        pusher-channel (.subscribe pusher channel-name (channel-listener channel-callback) (into-array String []))]
+        pusher-channel (.subscribe pusher channel-name)]
     (.connect pusher (connection-listener pusher pusher-callback) (into-array [ConnectionState/ALL]))
     (.bind pusher-channel (name event-name) (subscription-listener subs-callback))
     [pusher pusher-channel status-ch data-ch]))
