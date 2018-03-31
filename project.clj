@@ -5,11 +5,13 @@
             :url "http://opensource.org/licenses/MIT"}
 
   :dependencies [[org.clojure/core.async "0.4.474"]
+                 [cheshire "5.8.0"]
                  [com.pusher/pusher-java-client "1.8.0"]]
 
   :profiles {:dev {:plugins [[lein-cloverage "1.0.10"]
                              [lein-kibit "0.1.6"]
-                             [jonase/eastwood "0.2.5"]]
+                             [jonase/eastwood "0.2.5"]
+                             [venantius/ultra "0.5.2"]]
                    :dependencies [[org.clojure/clojure "1.9.0"]]
                    :source-paths ["src" "dev/src"]}}
   :aliases {"coverage" ["cloverage" "--fail-threshold" "95" "-e" "dev|user"]})
