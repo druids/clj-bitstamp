@@ -20,4 +20,3 @@ jobs:
           key: clj-bitstamp-{{ checksum "project.clj" }}
       - run: lein coverage
       - run: lein kibit
-      - run: lein eastwood
