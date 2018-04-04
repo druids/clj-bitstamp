@@ -23,7 +23,7 @@
 
 
 (deftest new-pusher-test
-  (let [orderbook {:bids [[5555.00 4.07020000]]}
+  (let [orderbook {:bids [[5555.00M 4.0702M]]}
         pusher-class (reify Client
                        (connect [this])
 

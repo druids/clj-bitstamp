@@ -76,3 +76,8 @@ and again connected withoin same `pusher` instance
 ```clojure
 (clj-bitstamp/connect pusher)
 ```
+
+
+#### Notes
+
+- floating-point numbers are parsed as `BigDecimal`s
