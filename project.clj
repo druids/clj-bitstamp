@@ -17,4 +17,4 @@
                    :source-paths ["src" "dev/src"]}
              :test {:dependencies [[org.clojure/clojure "1.9.0"]
                                    [clj-async-test "0.0.5"]]}}
-  :aliases {"coverage" ["with-profile" "test" "cloverage" "--fail-threshold" "95" "-e" "dev|user"]})
+  :aliases {"coverage" ["with-profile" "test" "cloverage" "--fail-threshold" "83" "-e" "dev|user"]})
