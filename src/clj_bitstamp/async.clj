@@ -2,6 +2,7 @@
   (:require
     [clojure.core.async :as async]
     [cheshire.core :as cheshire]
+    [cheshire.parse :as parse]
     [tol.core :as tol])
   (:import
     com.pusher.client.channel.ChannelEventListener
@@ -52,7 +53,8 @@
   [callback]
   (reify SubscriptionEventListener
     (onEvent [this channel-name event-name data]
-      (callback channel-name (keyword event-name) (cheshire/parse-string data true)))))
+      (binding [parse/*use-bigdecimals?* true]
+        (callback channel-name (keyword event-name) (cheshire/parse-string data true))))))
 
 
 (defn disconnect
