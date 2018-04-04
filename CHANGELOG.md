@@ -1,3 +1,10 @@
+## 0.2.0
+
+#### New Features
+
+  - Floating-point number are parsed as BigDecimals #8
+
+
 ## 0.1.0
 
 #### New Features
