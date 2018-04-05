@@ -49,12 +49,20 @@
       (callback this channel-name))))
 
 
+(defn- coerce-orderbook
+  [ob]
+  (mapv #(mapv bigdec %) ob))
+
+
 (defn- subscription-listener
-  [callback]
+  [callback str-big-decimals?]
   (reify SubscriptionEventListener
     (onEvent [this channel-name event-name data]
       (binding [parse/*use-bigdecimals?* true]
-        (callback channel-name (keyword event-name) (cheshire/parse-string data true))))))
+        (let [parsed (cheshire/decode data true)]
+          (callback channel-name (keyword event-name) (if str-big-decimals?
+                                                        (tol/update-values coerce-orderbook parsed)
+                                                        parsed)))))))
 
 
 (defn disconnect
@@ -68,7 +76,9 @@
 
 
 (defn pusher-factory
-  [pusher {:keys [channel-name pusher-key event-name status-buffer-or-n data-buffer-or-n] :as opts}]
+  [pusher {:keys [channel-name pusher-key event-name status-buffer-or-n data-buffer-or-n str-big-decimals?]
+           :as opts
+           :or {str-big-decimals? true}}]
   (let [status-ch (async/chan status-buffer-or-n)
         data-ch (async/chan data-buffer-or-n)
         pusher-callback (fn [pusher action data]
@@ -77,7 +87,7 @@
                         (async/>!! data-ch [channel-name event-name data]))
         pusher-channel (.subscribe pusher channel-name)]
     (.connect pusher (connection-listener pusher pusher-callback) (into-array [ConnectionState/ALL]))
-    (.bind pusher-channel (name event-name) (subscription-listener subs-callback))
+    (.bind pusher-channel (name event-name) (subscription-listener subs-callback str-big-decimals?))
     [pusher pusher-channel status-ch data-ch]))
 
 
@@ -94,6 +104,7 @@
    - `pusher-key` a Pusher key, default de504dc5763aeef9ff52
    - `event-name` an event name to bind on the subscribed channel
    - `status-buffer-or-n` a buffer-or-n for the status channel
-   - `data-buffer-or-n` a buffer-or-n for the data channel"
+   - `data-buffer-or-n` a buffer-or-n for the data channel
+   - `str-big-decimals?` when `true` coerce a volume and price (in strings) as `BigDecimal`, default `true`"
   [{:keys [channel-name pusher-key event-name status-buffer-or-n data-buffer-or-n] :as opts}]
   (pusher-factory (Pusher. (or pusher-key default-pusher-key)) opts))
