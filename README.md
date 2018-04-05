@@ -33,6 +33,7 @@ The function takes an option object:
 - `event-name` an event name to bind on the subscribed channel, optional
 - `status-buffer-or-n` a buffer-or-n for the status channel, optional
 - `data-buffer-or-n` a buffer-or-n for the data channel, optional
+- `str-big-decimals?` when `true` coerce a volume and price (in strings) as `BigDecimal`, default `true`
 
 Data channel returns a tuple of channel-name, event-name (as `keyword`), and data.
 
