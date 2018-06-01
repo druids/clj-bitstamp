@@ -49,7 +49,8 @@ Status channel returns a tuple of event-name (as `keyword`), and data. Expected 
 Example:
 
 ```clojure
-(require '[clj-bitstamp.core :as clj-bitstamp])
+(require '[clojure.core.async :as async])
+(require '[clj-bitstamp.async :as bitstamp])
 
 (let [[pusher pusher-channel status-ch data-ch]
       (bitstamp/new-pusher {:channel-name "order_book_btceur" ;; required

@@ -7,7 +7,7 @@
   :dependencies [[org.clojure/core.async "0.4.474"]
                  [cheshire "5.8.0"]
                  [com.pusher/pusher-java-client "1.8.0"]
-                 [tol "0.7.0"]]
+                 [tol "0.8.0"]]
 
   :profiles {:dev {:plugins [[lein-cloverage "1.0.10"]
                              [lein-kibit "0.1.6"]
