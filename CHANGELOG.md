@@ -1,3 +1,11 @@
+## 0.4.0
+
+#### Fixes
+
+  - Fixed #12 orderbook coercing
+  - Upgrade Tol to 0.8.0 #12
+
+
 ## 0.3.0
 
 #### New Features

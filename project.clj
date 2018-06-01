@@ -1,4 +1,4 @@
-(defproject clj-bitstamp "0.3.0"
+(defproject clj-bitstamp "0.4.0"
   :description "A client for Bitstamp API based on core.async"
   :url "https://github.com/druids/clj-bitstamp"
   :license {:name "MIT License"

@@ -12,7 +12,7 @@ Leiningen/Boot
 --------------
 
 ```clojure
-[clj-bitstamp "0.3.0"]
+[clj-bitstamp "0.4.0"]
 ```
 
 Documentation
