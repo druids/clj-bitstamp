@@ -50,19 +50,21 @@
 
 
 (defn- coerce-orderbook
-  [ob]
-  (mapv #(mapv bigdec %) ob))
+  [str-big-decimals? ob]
+  (let [coerced-ob (update ob :timestamp tol/->int)]
+    (if str-big-decimals?
+      (merge coerced-ob
+             (tol/update-values (partial map #(mapv bigdec %)) (select-keys ob [:asks :bids])))
+      coerced-ob)))
 
 
-(defn- subscription-listener
+(defn subscription-listener
   [callback str-big-decimals?]
   (reify SubscriptionEventListener
     (onEvent [this channel-name event-name data]
       (binding [parse/*use-bigdecimals?* true]
         (let [parsed (cheshire/decode data true)]
-          (callback channel-name (keyword event-name) (if str-big-decimals?
-                                                        (tol/update-values coerce-orderbook parsed)
-                                                        parsed)))))))
+          (callback channel-name (keyword event-name) (coerce-orderbook str-big-decimals? parsed)))))))
 
 
 (defn disconnect

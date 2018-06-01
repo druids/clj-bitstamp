@@ -55,7 +55,32 @@
 
 
 (deftest new-pusher-test
-  (doseq [[input output str-big-decimals?] [[{:bids [[5555.0 4.0702]]} {:bids [[5555.0M 4.0702M]]} false]
-                                            [{:bids [["5555.00" "4.0702"]]} {:bids [[5555.00M 4.0702M]]} true]
-                                            [{:bids [["5555.00" "4.0702"]]} {:bids [["5555.00" "4.0702"]]} false]]]
+  (doseq [[input output str-big-decimals?] [[{:bids [[5555.0 4.0702]], :timestamp "1527842633"}
+                                             {:bids [[5555.0M 4.0702M]], :timestamp 1527842633}
+                                             false]
+                                            [{:bids [["5555.00" "4.0702"]], :timestamp "1527842633"}
+                                             {:bids [[5555.00M 4.0702M]], :timestamp 1527842633}
+                                             true]
+                                            [{:bids [["5555.00" "4.0702"]], :timestamp "1527842633"}
+                                             {:bids [["5555.00" "4.0702"]], :timestamp 1527842633}
+                                             false]]]
     (pusher-test input output str-big-decimals?)))
+
+
+(deftest subscription-listener-test
+  (let [assert-event (fn [expected-channel expected-event expected-data channel-name event-name data]
+                       (is (= expected-channel channel-name))
+                       (is (= expected-event event-name))
+                       (is (= expected-data data)))]
+    (doseq [[expected-channel expected-event expected-data channel-name event-name data str-big-decimals?]
+            [["bar" :foo {:asks [[6480.99M 2.79500000M]], :bids [[6480.99M 2.79500000M]], :timestamp 1527842633}
+              "bar" "foo" (str "{\"timestamp\": \"1527842633\", \"bids\": [[\"6480.99\", \"2.79500000\"]],"
+                               "\"asks\": [[\"6480.99\", \"2.79500000\"]]}") true]
+             ["bar" :foo {:asks [["6480.99" "2.79500000"]], :bids [["6480.99" "2.79500000"]], :timestamp 1527842633}
+              "bar" "foo" (str "{\"timestamp\": \"1527842633\", \"bids\": [[\"6480.99\", \"2.79500000\"]],"
+                               "\"asks\": [[\"6480.99\", \"2.79500000\"]]}") false]]]
+      (.onEvent (bs/subscription-listener (partial assert-event expected-channel expected-event expected-data)
+                                          str-big-decimals?)
+                channel-name
+                event-name
+                data))))
